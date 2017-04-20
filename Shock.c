@@ -90,7 +90,7 @@ void inicializar(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
     u3[i]=(P[i]/(gamma-1.0))+0.5*rho[i]*u[i]*u[i];
     F2[i]=(rho[i]*u[i]*u[i])+P[i];
     F3[i]=u[i]*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*u[i]*u[i]);
-    c[i]=343.2;
+    c[i]=sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*u[i]*u[i]));
     uc[i]=u[i]+c[i];
   }
 
@@ -143,6 +143,7 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   
   int j;
   j=0;
+  
 
   /*Empieza el metodo*/
   while(j==0){
@@ -191,11 +192,11 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
       P[i]=(gamma-1.0)*(u3[i]-0.5*u2[i]*u[i]);
       F2[i]=u2[i]*u[i]+P[i];
       F3[i]=u[i]*((gamma*P[i]/(gamma-1.0))+0.5*u2[i]*u[i]);
+      c[i]=sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*u[i]*u[i]));
       uc[i]=u[i]+c[i];
      
     }
     dt=2.0*dx/max(uc);
-    
     if(wherefrente(u)>=ic){
       j=1;
     }
