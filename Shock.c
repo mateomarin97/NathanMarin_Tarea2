@@ -7,6 +7,7 @@
 void inicializar(float *u,float *rho,float *P,float *u2,float *u3,float *F2,float *F3,float *c,float *uc);
 void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,float *F3,float *c,float *uc);
 float max(float *A);
+float min(float *A);
 int wherefrente(float *A);
 int wheremax(float *A);
 
@@ -103,12 +104,14 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   /*Declaro variables y constantes importantes*/
   float dx;
   int ic;
+  float tiempo;
   dx= L/N;
   ic=(int)(0.9*N-1);
   ic= ic+1;
   int i;
   float dt;
   dt=2.0*dx/max(uc);
+  tiempo=dt;
   /*Defino las listas intermedias*/
   float *rhoip;
   float *rhoin;
@@ -143,10 +146,12 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   
   int j;
   j=0;
+  int con;
+  con=0;
   
 
   /*Empieza el metodo*/
-  while(j==0){
+  while(j==0 && con<30000){
 
     /*Primer paso*/
     i=0;
@@ -197,11 +202,17 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
      
     }
     dt=2.0*dx/max(uc);
+    tiempo=tiempo+dt;
     if(wherefrente(u)>=ic){
       j=1;
     }
   }
- 
+  FILE *archivo;
+  archivo=fopen("tshock.dat","w");
+  fclose(archivo);
+  archivo=fopen("tshock.dat","a");
+  fprintf(archivo,"%f ",tiempo);
+  fclose(archivo);
   
 }
 
@@ -217,6 +228,21 @@ float max(float *A){
   }
 
   return maximo;
+}
+
+
+
+float min(float *A){
+  float minimo;
+  minimo=A[0];
+  int i;
+  for(i=1;i<N;i++){
+    if(A[i]<minimo){
+      minimo=A[i];
+    }
+  }
+
+  return minimo;
 }
 
 int wherefrente(float *A){

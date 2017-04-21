@@ -1,8 +1,8 @@
-u.pdf p.pdf rho.pdf : Shock.py ushock.dat pshock.dat rhoshock.dat
+plotshock :
 	python Shock.py
-ushock.dat pshock.dat rhoshock.dat : Shock.x
+shock :
 	./Shock.x
-Shock.x : Shock.c
+exec :
 	gcc Shock.c -lm -o Shock.x
 clean :
-	rm  ushock.dat pshock.dat rhoshock.dat u.pdf p.pdf rho.pdf Shock.x
+	rm  ushock.dat pshock.dat rhoshock.dat u.pdf p.pdf rho.pdf Shock.x tshock.dat
