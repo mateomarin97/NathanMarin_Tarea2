@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 u=np.loadtxt("ushock.dat")
 p=np.loadtxt("pshock.dat")
