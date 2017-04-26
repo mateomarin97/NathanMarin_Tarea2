@@ -10,9 +10,9 @@ float sgny(int i,int Np);
 float sgnz(int i,int N);
 void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4,float *u5,float *Fx2,float *Fx3,float *Fx4,float *Fx5,float *Fy3,float *Fy4,float *Fy5,float *Fz4,float *Fz5,float *c,float *cu,float *cv,float *cw,float *x,float *y,float *z,float *r,float *P,float *u,float *v,float *w);
 void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4,float *u5,float *Fx2,float *Fx3,float *Fx4,float *Fx5,float *Fy3,float *Fy4,float *Fy5,float *Fz4,float *Fz5,float *c,float *cu,float *cv,float *cw,float *x,float *y,float *z,float *r,float *P,float *u,float *v,float *w);
-float max(float *A);
-int wherefrente(float *A);
-int wheremax(float *A);
+float max(float *A, int N);
+int wherefrente(float *A, int N);
+int wheremax(float *A, int N);
 
 int main(){
   /*Declaro unas constantes importantes*/
@@ -124,7 +124,7 @@ float sgnz(int i,int N){
   }
 
   else{
-    return -1.0
+    return -1.0;
   }
 
 }
@@ -142,9 +142,9 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,flo
     cu[i]=c[i]+u[i];
     cv[i]=c[i]+v[i];
     cw[i]=c[i]+w[i];
-    x[i]=dl*(0.5+(i%Nf));
-    y[i]=dl*(0.5+(int)((i%Np)/Nf));
-    z[i]=dl*(0.5+(int)(i/Np));
+    x[i]=dL*(0.5+(i%Nf));
+    y[i]=dL*(0.5+(int)((i%Np)/Nf));
+    z[i]=dL*(0.5+(int)(i/Np));
     u2[i]=rho[i]*u[i];
     u3[i]=rho[i]*v[i];
     u4[i]=rho[i]*w[i];
@@ -199,7 +199,7 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,flo
 
 
 
-float max(float *A){
+float max(float *A, int N){
   float maximo;
   maximo=A[0];
   int i;
@@ -215,7 +215,7 @@ float max(float *A){
 
 
 
-int wherefrente(float *A){
+int wherefrente(float *A, int N){
   int i;
   int f;
   f=0;
@@ -228,7 +228,7 @@ int wherefrente(float *A){
 }
 
 
-int wheremax(float *A){
+int wheremax(float *A, int N){
   float maximo;
   maximo=A[0];
   int where;
