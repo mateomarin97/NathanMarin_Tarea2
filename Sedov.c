@@ -8,8 +8,8 @@
 float sgnx(int i,int Nf);
 float sgny(int i,int Np);
 float sgnz(int i,int N);
-void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4,float *u5,float *Fx2,float *Fx3,float *Fx4,float *Fx5,float *Fy3,float *Fy4,float *Fy5,float *Fz4,float *Fz5,float *c,float *cu,float *cv,float *cw,float *x,float *y,float *z,float *r,float *P,float *u,float *v,float *w);
-void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4,float *u5,float *Fx2,float *Fx3,float *Fx4,float *Fx5,float *Fy3,float *Fy4,float *Fy5,float *Fz4,float *Fz5,float *c,float *cu,float *cv,float *cw,float *x,float *y,float *z,float *r,float *P,float *u,float *v,float *w);
+void inicializar(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w);
+void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w);
 float max(float *A, int N);
 int wherefrente(float *A, int N);
 int wheremax(float *A, int N);
@@ -26,26 +26,10 @@ int main(){
   ic= (int)(0.5*(N+Np+Nf));
   /*Declaro las listas*/
   float *rho;
-  float *u2;
-  float *u3;
-  float *u4;
-  float *u5;
-  float *Fx2;
-  float *Fx3;
-  float *Fx4;
-  float *Fx5;
-  float *Fy3;
-  float *Fy4;
-  float *Fy5;
-  float *Fz4;
-  float *Fz5;
   float *c;
   float *cu;
   float *cv;
   float *cw;
-  float *x;
-  float *y;
-  float *z;
   float *r;
   float *P;
   float *u;
@@ -53,26 +37,10 @@ int main(){
   float *w;
   
   rho=malloc(N*sizeof(float));
-  u2=malloc(N*sizeof(float));
-  u3=malloc(N*sizeof(float));
-  u4=malloc(N*sizeof(float));
-  u5=malloc(N*sizeof(float));
-  Fx2=malloc(N*sizeof(float));
-  Fx3=malloc(N*sizeof(float));
-  Fx4=malloc(N*sizeof(float));
-  Fx5=malloc(N*sizeof(float));
-  Fy3=malloc(N*sizeof(float));
-  Fy4=malloc(N*sizeof(float));
-  Fy5=malloc(N*sizeof(float));
-  Fz4=malloc(N*sizeof(float));
-  Fz5=malloc(N*sizeof(float));
   c=malloc(N*sizeof(float));
   cu=malloc(N*sizeof(float));
   cv=malloc(N*sizeof(float));
   cw=malloc(N*sizeof(float));
-  x=malloc(N*sizeof(float));
-  y=malloc(N*sizeof(float));
-  z=malloc(N*sizeof(float));
   r=malloc(N*sizeof(float));
   P=malloc(N*sizeof(float));
   u=malloc(N*sizeof(float));
@@ -80,9 +48,9 @@ int main(){
   w=malloc(N*sizeof(float));
  
   /*Ahora las inicilaizo*/
-  inicializar(N,Nf,Np,ic,rho,u2,u3,u4,u5,Fx2,Fx3,Fx4,Fx5,Fy3,Fy4,Fy5,Fz4,Fz5,c,cu,cv,cw,x,y,z,r,P,u,v,w);
+  inicializar(N,Nf,Np,ic,rho,c,cu,cv,cw,r,P,u,v,w);
   /*Ahora hago volumes finitos*/
-  sedov(N,Nf,Np,ic,rho,u2,u3,u4,u5,Fx2,Fx3,Fx4,Fx5,Fy3,Fy4,Fy5,Fz4,Fz5,c,cu,cv,cw,x,y,z,r,P,u,v,w);
+  sedov(N,Nf,Np,ic,rho,c,cu,cv,cw,r,P,u,v,w);
 
 
 
@@ -130,7 +98,7 @@ float sgnz(int i,int N){
 }
 
 
-void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4,float *u5,float *Fx2,float *Fx3,float *Fx4,float *Fx5,float *Fy3,float *Fy4,float *Fy5,float *Fz4,float *Fz5,float *c,float *cu,float *cv,float *cw,float *x,float *y,float *z,float *r,float *P,float *u,float *v,float *w){
+void inicializar(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w){
   int i;
   for(i=0;i<N;i++){
     rho[i]=1.0;
@@ -142,32 +110,16 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,flo
     cu[i]=c[i]+u[i];
     cv[i]=c[i]+v[i];
     cw[i]=c[i]+w[i];
-    x[i]=dL*(0.5+(i%Nf));
-    y[i]=dL*(0.5+(int)((i%Np)/Nf));
-    z[i]=dL*(0.5+(int)(i/Np));
-    u2[i]=rho[i]*u[i];
-    u3[i]=rho[i]*v[i];
-    u4[i]=rho[i]*w[i];
-    u5[i]=(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]);
-    Fx2[i]=u2[i]*u[i]+P[i];
-    Fx3[i]=u2[i]*v[i];
-    Fx4[i]=u2[i]*w[i];
-    Fx5[i]=u[i]*(P[i]+u5[i]);
-    Fy3[i]=u3[i]*v[i]+P[i];
-    Fy4[i]=u3[i]*w[i];
-    Fy5[i]=v[i]*(P[i]+u5[i]);
-    Fz4[i]=u4[i]*w[i]+P[i];
-    Fz5[i]=w[i]*(P[i]+u5[i]);
   }
 
   float xc;
   float yc;
   float zc;
-  xc=x[ic];
-  yc=y[ic];
-  zc=z[ic];
+  xc=dL*(0.5+(ic%Nf));
+  yc=dL*(0.5+(int)((ic%Np)/Nf));
+  zc=dL*(0.5+(int)(ic/Np));
   for(i=0;i<N;i++){
-    r[i]=pow((xc-x[i])*(xc-x[i])+(yc-y[i])*(yc-y[i])+(zc-z[i])*(zc-z[i]),0.5);
+    r[i]=pow((xc-(dL*(0.5+(i%Nf))))*(xc-(dL*(0.5+(i%Nf))))+(yc-(dL*(0.5+(int)((i%Np)/Nf))))*(yc-(dL*(0.5+(int)((i%Np)/Nf))))+(zc-(dL*(0.5+(int)(i/Np))))*(zc-(dL*(0.5+(int)(i/Np)))),0.5);
   }
     rho[ic]=1.0;
     P[ic]=(E0*(gamma-1.0)/(dL*dL*dL))/(101000.0);
@@ -178,22 +130,7 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,flo
     cu[ic]=c[ic]+u[ic];
     cv[ic]=c[ic]+v[ic];
     cw[ic]=c[ic]+w[ic];
-    x[ic]=dL*(0.5+(ic%Nf));
-    y[ic]=dL*(0.5+(int)((ic%Np)/Nf));
-    z[ic]=dL*(0.5+(int)(ic/Np));
-    u2[ic]=rho[ic]*u[ic];
-    u3[ic]=rho[ic]*v[ic];
-    u4[ic]=rho[ic]*w[ic];
-    u5[ic]=(P[ic]/(gamma-1.0))+0.5*rho[ic]*(u[ic]*u[ic]+v[ic]*v[ic]+w[ic]*w[ic]);
-    Fx2[ic]=u2[ic]*u[ic]+P[ic];
-    Fx3[ic]=u2[ic]*v[ic];
-    Fx4[ic]=u2[ic]*w[ic];
-    Fx5[ic]=u[ic]*(P[ic]+u5[ic]);
-    Fy3[ic]=u3[ic]*v[ic]+P[ic];
-    Fy4[ic]=u3[ic]*w[ic];
-    Fy5[ic]=v[ic]*(P[ic]+u5[ic]);
-    Fz4[ic]=u4[ic]*w[ic]+P[ic];
-    Fz5[ic]=w[ic]*(P[ic]+u5[ic]);
+    
 
 }
 
@@ -249,7 +186,7 @@ int wheremax(float *A, int N){
 
 
 
-void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4,float *u5,float *Fx2,float *Fx3,float *Fx4,float *Fx5,float *Fy3,float *Fy4,float *Fy5,float *Fz4,float *Fz5,float *c,float *cu,float *cv,float *cw,float *x,float *y,float *z,float *r,float *P,float *u,float *v,float *w){
+void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w){
 
   float tiempo;
   float dt;
@@ -294,132 +231,129 @@ void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4
   float Fz4inz;
   float Fz5inz;
 
+  float rhoa;
+  float ua;
+  float va;
+  float wa;
+
   
   
   while(cont<100){
     for(i=0;i<N;i++){
 
       if(i%Nf!=Nf-1){
-	u2ipx=0.5*(u2[i+1]+u2[i]);
-	Fx2ipx=0.5*(Fx2[i+1]+Fx2[i]);
-	Fx3ipx=0.5*(Fx3[i+1]+Fx3[i]);
-	Fx4ipx=0.5*(Fx4[i+1]+Fx4[i]);
-	Fx5ipx=0.5*(Fx5[i+1]+Fx5[i]);
+	u2ipx=0.5*(rho[i+1]*u[i+1]+rho[i]*u[i]);
+	Fx2ipx=0.5*((rho[i+1]*u[i+1]*u[i+1])+P[i+1]+P[i]+(rho[i]*u[i]*u[i]));
+	Fx3ipx=0.5*(rho[i+1]*u[i+1]*v[i+1]+rho[i]*u[i]*v[i]);
+	Fx4ipx=0.5*(rho[i+1]*u[i+1]*w[i+1]+rho[i]*u[i]*w[i]);
+	Fx5ipx=0.5*((u[i+1]*(P[i+1]+(P[i+1]/(gamma-1.0))+0.5*rho[i+1]*(u[i+1]*u[i+1]+v[i+1]*v[i+1]+w[i+1]*w[i+1])))+(u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
       else {
-	u2ipx=u2[i];
-	Fx2ipx=Fx2[i];
-	Fx3ipx=Fx3[i];
-	Fx4ipx=Fx4[i];
-	Fx5ipx=Fx5[i];
+	u2ipx=rho[i]*u[i];
+	Fx2ipx=rho[i]*u[i]*u[i]+P[i];
+	Fx3ipx=rho[i]*u[i]*v[i];
+	Fx4ipx=rho[i]*u[i]*w[i];
+	Fx5ipx=u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
       if(i%Nf!=0){
-	u2inx=0.5*(u2[i-1]+u2[i]);
-	Fx2inx=0.5*(Fx2[i-1]+Fx2[i]);
-	Fx3inx=0.5*(Fx3[i-1]+Fx3[i]);
-	Fx4inx=0.5*(Fx4[i-1]+Fx4[i]);
-	Fx5inx=0.5*(Fx5[i-1]+Fx5[i]);
+	u2inx=0.5*(rho[i-1]*u[i-1]+rho[i]*u[i]);
+	Fx2inx=0.5*((rho[i-1]*u[i-1]*u[i-1])+P[i-1]+P[i]+(rho[i]*u[i]*u[i]));
+	Fx3inx=0.5*(rho[i-1]*u[i-1]*v[i-1]+rho[i]*u[i]*v[i]);
+	Fx4inx=0.5*(rho[i-1]*u[i-1]*w[i-1]+rho[i]*u[i]*w[i]);
+	Fx5inx=0.5*((u[i-1]*(P[i-1]+(P[i-1]/(gamma-1.0))+0.5*rho[i-1]*(u[i-1]*u[i-1]+v[i-1]*v[i-1]+w[i-1]*w[i-1])))+(u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
       else{
-	u2inx=u2[i];
-	Fx2inx=Fx2[i];
-	Fx3inx=Fx3[i];
-	Fx4inx=Fx4[i];
-	Fx5inx=Fx5[i];
+	u2inx=rho[i]*u[i];
+	Fx2inx=rho[i]*u[i]*u[i]+P[i];
+	Fx3inx=rho[i]*u[i]*v[i];
+	Fx4inx=rho[i]*u[i]*w[i];
+	Fx5inx=u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
 
       if(i%Np<Np-Nf){
-	u3ipy=0.5*(u3[i+Nf]+u3[i]);
-	Fx3ipy=0.5*(Fx3[i+Nf]+Fx3[i]);
-	Fy3ipy=0.5*(Fy3[i+Nf]+Fy3[i]);
-	Fy4ipy=0.5*(Fy4[i+Nf]+Fy4[i]);
-       	Fy5ipy=0.5*(Fy5[i+Nf]+Fy5[i]);
+	u3ipy=0.5*(rho[i+Nf]*v[i+Nf]+rho[i]*v[i]);
+	Fx3ipy=0.5*(rho[i+Nf]*u[i+Nf]*v[i+Nf]+rho[i]*u[i]*v[i]);
+	Fy3ipy=0.5*(rho[i+Nf]*v[i+Nf]*v[i+Nf]+P[i+Nf]+rho[i]*v[i]*v[i]+P[i]);
+	Fy4ipy=0.5*(rho[i+Nf]*v[i+Nf]*w[i+Nf]+rho[i]*v[i]*w[i]);
+       	Fy5ipy=0.5*((v[i+Nf]*(P[i+Nf]+(P[i+Nf]/(gamma-1.0))+0.5*rho[i+Nf]*(u[i+Nf]*u[i+Nf]+v[i+Nf]*v[i+Nf]+w[i+Nf]*w[i+Nf])))+(v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
       else{
-	u3ipy=u3[i];
-	Fx3ipy=Fx3[i];
-	Fy3ipy=Fy3[i];
-	Fy4ipy=Fy4[i];
-       	Fy5ipy=Fy5[i];
+	u3ipy=rho[i]*v[i];
+	Fx3ipy=rho[i]*u[i]*v[i];
+	Fy3ipy=rho[i]*v[i]*v[i]+P[i];
+	Fy4ipy=rho[i]*v[i]*w[i];
+       	Fy5ipy=v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
 
       if(i%Np>=Nf){
-       	u3iny=0.5*(u3[i-Nf]+u3[i]);
-	Fx3iny=0.5*(Fx3[i-Nf]+Fx3[i]);
-	Fy3iny=0.5*(Fy3[i-Nf]+Fy3[i]);
-	Fy4iny=0.5*(Fy4[i-Nf]+Fy4[i]);
-       	Fy5iny=0.5*(Fy5[i-Nf]+Fy5[i]);
+       	u3iny=0.5*(rho[i-Nf]*v[i-Nf]+rho[i]*v[i]);
+	Fx3iny=0.5*(rho[i-Nf]*u[i-Nf]*v[i-Nf]+rho[i]*u[i]*v[i]);
+	Fy3iny=0.5*(rho[i-Nf]*v[i-Nf]*v[i-Nf]+P[i-Nf]+rho[i]*v[i]*v[i]+P[i]);
+	Fy4iny=0.5*(rho[i-Nf]*v[i-Nf]*w[i-Nf]+rho[i]*v[i]*w[i]);
+       	Fy5iny=0.5*((v[i-Nf]*(P[i-Nf]+(P[i-Nf]/(gamma-1.0))+0.5*rho[i-Nf]*(u[i-Nf]*u[i-Nf]+v[i-Nf]*v[i-Nf]+w[i-Nf]*w[i-Nf])))+(v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
 
       else{
-	u3iny=u3[i];
-	Fx3iny=Fx3[i];
-	Fy3iny=Fy3[i];
-	Fy4iny=Fy4[i];
-       	Fy5iny=Fy5[i];
+	u3iny=rho[i]*v[i];
+	Fx3iny=rho[i]*u[i]*v[i];
+	Fy3iny=rho[i]*v[i]*v[i]+P[i];
+	Fy4iny=rho[i]*v[i]*w[i];
+       	Fy5iny=v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
 
       if(i<N-Np){
-	u4ipz=0.5*(u4[i+Np]+u4[i]);
-	Fx4ipz=0.5*(Fx4[i+Np]+Fx4[i]);
-	Fy4ipz=0.5*(Fy4[i+Np]+Fy4[i]);
-	Fz4ipz=0.5*(Fz4[i+Np]+Fz4[i]);
-	Fz5ipz=0.5*(Fz5[i+Np]+Fz5[i]);
+	u4ipz=0.5*(rho[i+Np]*w[i+Np]+rho[i]*w[i]);
+	Fx4ipz=0.5*(rho[i+Np]*u[i+Np]*w[i+Np]+rho[i]*u[i]*w[i]);
+	Fy4ipz=0.5*(rho[i+Np]*v[i+Np]*w[i+Np]+rho[i]*v[i]*w[i]);
+	Fz4ipz=0.5*(rho[i+Np]*w[i+Np]*w[i+Np]+P[i+Np]+rho[i]*w[i]*w[i]+P[i]);
+	Fz5ipz=0.5*((w[i+Np]*(P[i+Np]+(P[i+Np]/(gamma-1.0))+0.5*rho[i+Np]*(u[i+Np]*u[i+Np]+v[i+Np]*v[i+Np]+w[i+Np]*w[i+Np])))+(w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
 
       else{
-	u4ipz=u4[i];
-	Fx4ipz=Fx4[i];
-	Fy4ipz=Fy4[i];
-	Fz4ipz=Fz4[i];
-	Fz5ipz=Fz5[i];
+	u4ipz=rho[i]*w[i];
+	Fx4ipz=rho[i]*u[i]*w[i];
+	Fy4ipz=rho[i]*v[i]*w[i];
+	Fz4ipz=rho[i]*w[i]*w[i]+P[i];
+	Fz5ipz=w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
       
 
       if(i>=Np){
-       	u4inz=0.5*(u4[i-Np]+u4[i]);
-	Fx4inz=0.5*(Fx4[i-Np]+Fx4[i]);
-	Fy4inz=0.5*(Fy4[i-Np]+Fy4[i]);
-	Fz4inz=0.5*(Fz4[i-Np]+Fz4[i]);
-	Fz5inz=0.5*(Fz5[i-Np]+Fz5[i]);
+       	u4inz=0.5*(rho[i-Np]*w[i-Np]+rho[i]*w[i]);
+	Fx4inz=0.5*(rho[i-Np]*u[i-Np]*w[i-Np]+rho[i]*u[i]*w[i]);
+	Fy4inz=0.5*(rho[i-Np]*v[i-Np]*w[i-Np]+rho[i]*v[i]*w[i]);
+	Fz4inz=0.5*(rho[i-Np]*w[i-Np]*w[i-Np]+P[i-Np]+rho[i]*w[i]*w[i]+P[i]);
+	Fz5inz=0.5*((w[i-Np]*(P[i-Np]+(P[i-Np]/(gamma-1.0))+0.5*rho[i-Np]*(u[i-Np]*u[i-Np]+v[i-Np]*v[i-Np]+w[i-Np]*w[i-Np])))+(w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
 
        else{
-	u4inz=u4[i];
-	Fx4inz=Fx4[i];
-	Fy4inz=Fy4[i];
-	Fz4inz=Fz4[i];
-	Fz5inz=Fz5[i];
+	u4inz=rho[i]*w[i];
+	Fx4inz=rho[i]*u[i]*w[i];
+	Fy4inz=rho[i]*v[i]*w[i];
+	Fz4inz=rho[i]*w[i]*w[i]+P[i];
+	Fz5inz=w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
-      rho[i]=rho[i]+sgnx(i,Nf)*(dt/dL)*(u2inx-u2ipx)+sgny(i,Np)*(dt/dL)*(u3iny-u3ipy)+sgnz(i,N)*(dt/dL)*(u4inz-u4ipz);
-      u2[i]=u2[i]+sgnx(i,Nf)*(dt/dL)*(Fx2inx-Fx2ipx)+sgny(i,Np)*(dt/dL)*(Fx3iny-Fx3ipy)+sgnz(i,N)*(dt/dL)*(Fx4inz-Fx4ipz);
-      u3[i]=u3[i]+sgnx(i,Nf)*(dt/dL)*(Fx3inx-Fx3ipx)+sgny(i,Np)*(dt/dL)*(Fy3iny-Fy3ipy)+sgnz(i,N)*(dt/dL)*(Fy4inz-Fy4ipz);
-      u4[i]=u4[i]+sgnx(i,Nf)*(dt/dL)*(Fx4inx-Fx4ipx)+sgny(i,Np)*(dt/dL)*(Fy4iny-Fy4ipy)+sgnz(i,N)*(dt/dL)*(Fz4inz-Fz4ipz);
-      u5[i]=u5[i]+sgnx(i,Nf)*(dt/dL)*(Fx5inx-Fx5ipx)+sgny(i,Np)*(dt/dL)*(Fy5iny-Fy5ipy)+sgnz(i,N)*(dt/dL)*(Fz5inz-Fz5ipz);
 
-      u[i]=u2[i]/rho[i];
-      v[i]=u3[i]/rho[i];
-      w[i]=u4[i]/rho[i];
-      P[i]=(gamma-1.0)*(u5[i]-0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+      rhoa=rho[i];
+      ua=u[i];
+      va=v[i];
+      wa=w[i];
+      
+      rho[i]=rho[i]+sgnx(i,Nf)*(dt/dL)*(u2inx-u2ipx)+sgny(i,Np)*(dt/dL)*(u3iny-u3ipy)+sgnz(i,N)*(dt/dL)*(u4inz-u4ipz);
+      u[i]=(u[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx2inx-Fx2ipx)+sgny(i,Np)*(dt/dL)*(Fx3iny-Fx3ipy)+sgnz(i,N)*(dt/dL)*(Fx4inz-Fx4ipz))/rho[i]);
+      v[i]=(v[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx3inx-Fx3ipx)+sgny(i,Np)*(dt/dL)*(Fy3iny-Fy3ipy)+sgnz(i,N)*(dt/dL)*(Fy4inz-Fy4ipz))/rho[i]);
+      w[i]=(w[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx4inx-Fx4ipx)+sgny(i,Np)*(dt/dL)*(Fy4iny-Fy4ipy)+sgnz(i,N)*(dt/dL)*(Fz4inz-Fz4ipz))/rho[i]);
+      P[i]=((P[i]/(gamma-1.0))+0.5*rhoa*(ua*ua+va*va+wa*wa)+sgnx(i,Nf)*(dt/dL)*(Fx5inx-Fx5ipx)+sgny(i,Np)*(dt/dL)*(Fy5iny-Fy5ipy)+sgnz(i,N)*(dt/dL)*(Fz5inz-Fz5ipz)-rho[i]*0.5*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))*(gamma-1.0);
       c[i]=pow(gamma*P[i]/rho[i],0.5);
       cu[i]=c[i]+u[i];
       cv[i]=c[i]+v[i];
       cw[i]=c[i]+w[i];
-      Fx2[i]=u2[i]*u[i]+P[i];
-      Fx3[i]=u2[i]*v[i];
-      Fx4[i]=u2[i]*w[i];
-      Fx5[i]=u[i]*(P[i]+u5[i]);
-      Fy3[i]=u3[i]*v[i]+P[i];
-      Fy4[i]=u3[i]*w[i];
-      Fy5[i]=v[i]*(P[i]+u5[i]);
-      Fz4[i]=u4[i]*w[i]+P[i];
-      Fz5[i]=w[i]*(P[i]+u5[i]);
     }
    
     caux[0]=max(cu,N);
