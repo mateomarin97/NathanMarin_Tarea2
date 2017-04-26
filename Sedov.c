@@ -40,9 +40,9 @@ int main(){
   w=malloc(N*sizeof(float));
  
   /*Ahora las inicilaizo*/
-  inicializar(N,Nf,Np,ic,rho,c,cu,cv,cw,r,P,u,v,w);
+  inicializar(N,Nf,Np,ic,rho,r,P,u,v,w);
   /*Ahora hago volumes finitos*/
-  sedov(N,Nf,Np,ic,rho,c,cu,cv,cw,r,P,u,v,w);
+  sedov(N,Nf,Np,ic,rho,r,P,u,v,w);
 
 
 
