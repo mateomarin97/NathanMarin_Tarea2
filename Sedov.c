@@ -178,9 +178,9 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,flo
     cu[ic]=c[ic]+u[ic];
     cv[ic]=c[ic]+v[ic];
     cw[ic]=c[ic]+w[ic];
-    x[ic]=dl*(0.5+(ic%Nf));
-    y[ic]=dl*(0.5+(int)((ic%Np)/Nf));
-    z[ic]=dl*(0.5+(int)(ic/Np));
+    x[ic]=dL*(0.5+(ic%Nf));
+    y[ic]=dL*(0.5+(int)((ic%Np)/Nf));
+    z[ic]=dL*(0.5+(int)(ic/Np));
     u2[ic]=rho[ic]*u[ic];
     u3[ic]=rho[ic]*v[ic];
     u4[ic]=rho[ic]*w[ic];
@@ -219,7 +219,7 @@ int wherefrente(float *A, int N){
   int i;
   int f;
   f=0;
-  for(i=wheremax(A);i<N;i++){
+  for(i=wheremax(A,N);i<N;i++){
     if(A[i]<0.01 && f==0){
       f=i;
     }
@@ -255,10 +255,10 @@ void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4
   float dt;
   float *caux;
   caux=malloc(3.0*sizeof(float));
-  caux[0]=max(cu);
-  caux[1]=max(cv);
-  caux[2]=max(cw);
-  dt=2.0*dL/max(caux);
+  caux[0]=max(cu,N);
+  caux[1]=max(cv,N);
+  caux[2]=max(cw,N);
+  dt=2.0*dL/max(caux,N);
   int cont;
   cont=0;
   int i;
@@ -457,10 +457,10 @@ void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4
       Fz5[i]=w[i]*(P[i]+u5[i]);
     }
    
-    caux[0]=max(cu);
-    caux[1]=max(cv);
-    caux[2]=max(cw);
-    dt=2.0*dL/max(caux);
+    caux[0]=max(cu,N);
+    caux[1]=max(cv,N);
+    caux[2]=max(cw,N);
+    dt=2.0*dL/max(caux,N);
     cont++;
   }
   FILE *archivo;
