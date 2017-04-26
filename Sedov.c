@@ -193,8 +193,17 @@ int wheremax(float *A, int N){
 void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,float *v,float *w){
 
   float tiempo;
+  FILE *archivo;
   float dt;
   dt=2.0*dL/maxc(rho,P,u,v,w,N);
+
+  archivo=fopen("dtsedov.dat","w");
+  fclose(archivo);
+  archivo=fopen("dtsedov.dat","a");
+  fprintf(archivo,"%f ",dt);
+  fclose(archivo);
+
+  
   int cont;
   cont=0;
   int i;
@@ -353,10 +362,15 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
     }
    
     dt=2.0*dL/maxc(rho,P,u,v,w,N);
+    archivo=fopen("dtsedov.dat","w");
+    fclose(archivo);
+    archivo=fopen("dtsedov.dat","a");
+    fprintf(archivo,"%f ",dt);
+    fclose(archivo);
     cont++;
   }
 
-  FILE *archivo;
+ 
   archivo=fopen("rhosedov.dat","w");
   fclose(archivo);
   archivo=fopen("rhosedov.dat","a");
