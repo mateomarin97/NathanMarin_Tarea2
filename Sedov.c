@@ -362,6 +362,8 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,f
     dt=2.0*dL/max(caux,N);
     cont++;
   }
+
+  /*
   FILE *archivo;
   archivo=fopen("rhosedov.dat","w");
   fclose(archivo);
@@ -370,7 +372,7 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,f
     fprintf(archivo,"%f ",rho[i]);
   }
   fclose(archivo);
-  
+  */
 
 
 }
