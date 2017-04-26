@@ -191,7 +191,7 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,f
   float tiempo;
   float dt;
   float *caux;
-  caux=malloc(3.0*sizeof(float));
+  caux=malloc(3*sizeof(float));
   caux[0]=max(cu,N);
   caux[1]=max(cv,N);
   caux[2]=max(cw,N);
