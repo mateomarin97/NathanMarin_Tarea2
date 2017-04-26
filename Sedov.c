@@ -432,11 +432,11 @@ void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4
 	Fz5inz[i]=Fz5[i];
       }
 
-      rho[i]=rho[i]+sgnx(i)*(dt/dL)*(u2inx[i]-u2ipx[i])+sgny(i)*(dt/dL)*(u3iny[i]-u3ipy[i])+sgnz(i)*(dt/dL)*(u4inz[i]-u4ipz[i]);
-      u2[i]=u2[i]+sgnx(i)*(dt/dL)*(Fx2inx[i]-Fx2ipx[i])+sgny(i)*(dt/dL)*(Fx3iny[i]-Fx3ipy[i])+sgnz(i)*(dt/dL)*(Fx4inz[i]-Fx4ipz[i]);
-      u3[i]=u3[i]+sgnx(i)*(dt/dL)*(Fx3inx[i]-Fx3ipx[i])+sgny(i)*(dt/dL)*(Fy3iny[i]-Fy3ipy[i])+sgnz(i)*(dt/dL)*(Fy4inz[i]-Fy4ipz[i]);
-      u4[i]=u4[i]+sgnx(i)*(dt/dL)*(Fx4inx[i]-Fx4ipx[i])+sgny(i)*(dt/dL)*(Fy4iny[i]-Fy4ipy[i])+sgnz(i)*(dt/dL)*(Fz4inz[i]-Fz4ipz[i]);
-      u5[i]=u5[i]+sgnx(i)*(dt/dL)*(Fx5inx[i]-Fx5ipx[i])+sgny(i)*(dt/dL)*(Fy5iny[i]-Fy5ipy[i])+sgnz(i)*(dt/dL)*(Fz5inz[i]-Fz5ipz[i]);
+      rho[i]=rho[i]+sgnx(i,Nf)*(dt/dL)*(u2inx[i]-u2ipx[i])+sgny(i,Np)*(dt/dL)*(u3iny[i]-u3ipy[i])+sgnz(i,N)*(dt/dL)*(u4inz[i]-u4ipz[i]);
+      u2[i]=u2[i]+sgnx(i,Nf)*(dt/dL)*(Fx2inx[i]-Fx2ipx[i])+sgny(i,Np)*(dt/dL)*(Fx3iny[i]-Fx3ipy[i])+sgnz(i,N)*(dt/dL)*(Fx4inz[i]-Fx4ipz[i]);
+      u3[i]=u3[i]+sgnx(i,Nf)*(dt/dL)*(Fx3inx[i]-Fx3ipx[i])+sgny(i,Np)*(dt/dL)*(Fy3iny[i]-Fy3ipy[i])+sgnz(i,N)*(dt/dL)*(Fy4inz[i]-Fy4ipz[i]);
+      u4[i]=u4[i]+sgnx(i,Nf)*(dt/dL)*(Fx4inx[i]-Fx4ipx[i])+sgny(i,Np)*(dt/dL)*(Fy4iny[i]-Fy4ipy[i])+sgnz(i,N)*(dt/dL)*(Fz4inz[i]-Fz4ipz[i]);
+      u5[i]=u5[i]+sgnx(i,Nf)*(dt/dL)*(Fx5inx[i]-Fx5ipx[i])+sgny(i,Np)*(dt/dL)*(Fy5iny[i]-Fy5ipy[i])+sgnz(i,N)*(dt/dL)*(Fz5inz[i]-Fz5ipz[i]);
 
       u[i]=u2[i]/rho[i];
       v[i]=u3[i]/rho[i];
