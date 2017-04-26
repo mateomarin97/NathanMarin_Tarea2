@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define dL 64.0
+#define dL 2.0
 #define L 256.0
 #define gamma 1.4
 #define E0 10000000000.0
@@ -263,71 +263,36 @@ void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4
   cont=0;
   int i;
   /*Defino las listas intermedias*/
-  float *u2ipx;
-  float *Fx2ipx;
-  float *Fx3ipx;
-  float *Fx4ipx;
-  float *Fx5ipx;
-  float *u2inx;
-  float *Fx2inx;
-  float *Fx3inx;
-  float *Fx4inx;
-  float *Fx5inx;
-  float *u3ipy;
-  float *Fx3ipy;
-  float *Fy3ipy;
-  float *Fy4ipy;
-  float *Fy5ipy;
-  float *u3iny;
-  float *Fx3iny;
-  float *Fy3iny;
-  float *Fy4iny;
-  float *Fy5iny;
-  float *u4ipz;
-  float *Fx4ipz;
-  float *Fy4ipz;
-  float *Fz4ipz;
-  float *Fz5ipz;
-  float *u4inz;
-  float *Fx4inz;
-  float *Fy4inz;
-  float *Fz4inz;
-  float *Fz5inz;
-
-
-  u2ipx=malloc(N*sizeof(float));
-  Fx2ipx=malloc(N*sizeof(float));
-  Fx3ipx=malloc(N*sizeof(float));
-  Fx4ipx=malloc(N*sizeof(float));
-  Fx5ipx=malloc(N*sizeof(float));
-  u2inx=malloc(N*sizeof(float));
-  Fx2inx=malloc(N*sizeof(float));
-  Fx3inx=malloc(N*sizeof(float));
-  Fx4inx=malloc(N*sizeof(float));
-  Fx5inx=malloc(N*sizeof(float));
-  u3ipy=malloc(N*sizeof(float));
-  Fx3ipy=malloc(N*sizeof(float));
-  Fy3ipy=malloc(N*sizeof(float));
-  Fy4ipy=malloc(N*sizeof(float));
-  Fy5ipy=malloc(N*sizeof(float));
-  u3iny=malloc(N*sizeof(float));
-  Fx3iny=malloc(N*sizeof(float));
-  Fy3iny=malloc(N*sizeof(float));
-  Fy4iny=malloc(N*sizeof(float));
-  Fy5iny=malloc(N*sizeof(float));
-  u4ipz=malloc(N*sizeof(float));
-  Fx4ipz=malloc(N*sizeof(float));
-  Fy4ipz=malloc(N*sizeof(float));
-  Fz4ipz=malloc(N*sizeof(float));
-  Fz5ipz=malloc(N*sizeof(float));
-  u4inz=malloc(N*sizeof(float));
-  Fx4inz=malloc(N*sizeof(float));
-  Fy4inz=malloc(N*sizeof(float));
-  Fz4inz=malloc(N*sizeof(float));
-  Fz5inz=malloc(N*sizeof(float));
-
-
-
+  float u2ipx;
+  float Fx2ipx;
+  float Fx3ipx;
+  float Fx4ipx;
+  float Fx5ipx;
+  float u2inx;
+  float Fx2inx;
+  float Fx3inx;
+  float Fx4inx;
+  float Fx5inx;
+  float u3ipy;
+  float Fx3ipy;
+  float Fy3ipy;
+  float Fy4ipy;
+  float Fy5ipy;
+  float u3iny;
+  float Fx3iny;
+  float Fy3iny;
+  float Fy4iny;
+  float Fy5iny;
+  float u4ipz;
+  float Fx4ipz;
+  float Fy4ipz;
+  float Fz4ipz;
+  float Fz5ipz;
+  float u4inz;
+  float Fx4inz;
+  float Fy4inz;
+  float Fz4inz;
+  float Fz5inz;
 
   
   
@@ -335,108 +300,108 @@ void sedov(int N,int Nf,int Np,int ic, float *rho, float *u2,float *u3,float *u4
     for(i=0;i<N;i++){
 
       if(i%Nf!=Nf-1){
-	u2ipx[i]=0.5*(u2[i+1]+u2[i]);
-	Fx2ipx[i]=0.5*(Fx2[i+1]+Fx2[i]);
-	Fx3ipx[i]=0.5*(Fx3[i+1]+Fx3[i]);
-	Fx4ipx[i]=0.5*(Fx4[i+1]+Fx4[i]);
-	Fx5ipx[i]=0.5*(Fx5[i+1]+Fx5[i]);
+	u2ipx=0.5*(u2[i+1]+u2[i]);
+	Fx2ipx=0.5*(Fx2[i+1]+Fx2[i]);
+	Fx3ipx=0.5*(Fx3[i+1]+Fx3[i]);
+	Fx4ipx=0.5*(Fx4[i+1]+Fx4[i]);
+	Fx5ipx=0.5*(Fx5[i+1]+Fx5[i]);
       }
       else {
-	u2ipx[i]=u2[i];
-	Fx2ipx[i]=Fx2[i];
-	Fx3ipx[i]=Fx3[i];
-	Fx4ipx[i]=Fx4[i];
-	Fx5ipx[i]=Fx5[i];
+	u2ipx=u2[i];
+	Fx2ipx=Fx2[i];
+	Fx3ipx=Fx3[i];
+	Fx4ipx=Fx4[i];
+	Fx5ipx=Fx5[i];
       }
 
       if(i%Nf!=0){
-	u2inx[i]=0.5*(u2[i-1]+u2[i]);
-	Fx2inx[i]=0.5*(Fx2[i-1]+Fx2[i]);
-	Fx3inx[i]=0.5*(Fx3[i-1]+Fx3[i]);
-	Fx4inx[i]=0.5*(Fx4[i-1]+Fx4[i]);
-	Fx5inx[i]=0.5*(Fx5[i-1]+Fx5[i]);
+	u2inx=0.5*(u2[i-1]+u2[i]);
+	Fx2inx=0.5*(Fx2[i-1]+Fx2[i]);
+	Fx3inx=0.5*(Fx3[i-1]+Fx3[i]);
+	Fx4inx=0.5*(Fx4[i-1]+Fx4[i]);
+	Fx5inx=0.5*(Fx5[i-1]+Fx5[i]);
       }
       else{
-	u2inx[i]=u2[i];
-	Fx2inx[i]=Fx2[i];
-	Fx3inx[i]=Fx3[i];
-	Fx4inx[i]=Fx4[i];
-	Fx5inx[i]=Fx5[i];
+	u2inx=u2[i];
+	Fx2inx=Fx2[i];
+	Fx3inx=Fx3[i];
+	Fx4inx=Fx4[i];
+	Fx5inx=Fx5[i];
       }
 
 
       if(i%Np<Np-Nf){
-	u3ipy[i]=0.5*(u3[i+Nf]+u3[i]);
-	Fx3ipy[i]=0.5*(Fx3[i+Nf]+Fx3[i]);
-	Fy3ipy[i]=0.5*(Fy3[i+Nf]+Fy3[i]);
-	Fy4ipy[i]=0.5*(Fy4[i+Nf]+Fy4[i]);
-       	Fy5ipy[i]=0.5*(Fy5[i+Nf]+Fy5[i]);
+	u3ipy=0.5*(u3[i+Nf]+u3[i]);
+	Fx3ipy=0.5*(Fx3[i+Nf]+Fx3[i]);
+	Fy3ipy=0.5*(Fy3[i+Nf]+Fy3[i]);
+	Fy4ipy=0.5*(Fy4[i+Nf]+Fy4[i]);
+       	Fy5ipy=0.5*(Fy5[i+Nf]+Fy5[i]);
       }
       else{
-	u3ipy[i]=u3[i];
-	Fx3ipy[i]=Fx3[i];
-	Fy3ipy[i]=Fy3[i];
-	Fy4ipy[i]=Fy4[i];
-       	Fy5ipy[i]=Fy5[i];
+	u3ipy=u3[i];
+	Fx3ipy=Fx3[i];
+	Fy3ipy=Fy3[i];
+	Fy4ipy=Fy4[i];
+       	Fy5ipy=Fy5[i];
       }
 
 
       if(i%Np>=Nf){
-       	u3iny[i]=0.5*(u3[i-Nf]+u3[i]);
-	Fx3iny[i]=0.5*(Fx3[i-Nf]+Fx3[i]);
-	Fy3iny[i]=0.5*(Fy3[i-Nf]+Fy3[i]);
-	Fy4iny[i]=0.5*(Fy4[i-Nf]+Fy4[i]);
-       	Fy5iny[i]=0.5*(Fy5[i-Nf]+Fy5[i]);
+       	u3iny=0.5*(u3[i-Nf]+u3[i]);
+	Fx3iny=0.5*(Fx3[i-Nf]+Fx3[i]);
+	Fy3iny=0.5*(Fy3[i-Nf]+Fy3[i]);
+	Fy4iny=0.5*(Fy4[i-Nf]+Fy4[i]);
+       	Fy5iny=0.5*(Fy5[i-Nf]+Fy5[i]);
       }
 
       else{
-	u3iny[i]=u3[i];
-	Fx3iny[i]=Fx3[i];
-	Fy3iny[i]=Fy3[i];
-	Fy4iny[i]=Fy4[i];
-       	Fy5iny[i]=Fy5[i];
+	u3iny=u3[i];
+	Fx3iny=Fx3[i];
+	Fy3iny=Fy3[i];
+	Fy4iny=Fy4[i];
+       	Fy5iny=Fy5[i];
       }
 
 
       if(i<N-Np){
-	u4ipz[i]=0.5*(u4[i+Np]+u4[i]);
-	Fx4ipz[i]=0.5*(Fx4[i+Np]+Fx4[i]);
-	Fy4ipz[i]=0.5*(Fy4[i+Np]+Fy4[i]);
-	Fz4ipz[i]=0.5*(Fz4[i+Np]+Fz4[i]);
-	Fz5ipz[i]=0.5*(Fz5[i+Np]+Fz5[i]);
+	u4ipz=0.5*(u4[i+Np]+u4[i]);
+	Fx4ipz=0.5*(Fx4[i+Np]+Fx4[i]);
+	Fy4ipz=0.5*(Fy4[i+Np]+Fy4[i]);
+	Fz4ipz=0.5*(Fz4[i+Np]+Fz4[i]);
+	Fz5ipz=0.5*(Fz5[i+Np]+Fz5[i]);
       }
 
       else{
-	u4ipz[i]=u4[i];
-	Fx4ipz[i]=Fx4[i];
-	Fy4ipz[i]=Fy4[i];
-	Fz4ipz[i]=Fz4[i];
-	Fz5ipz[i]=Fz5[i];
+	u4ipz=u4[i];
+	Fx4ipz=Fx4[i];
+	Fy4ipz=Fy4[i];
+	Fz4ipz=Fz4[i];
+	Fz5ipz=Fz5[i];
       }
 
       
 
       if(i>=Np){
-       	u4inz[i]=0.5*(u4[i-Np]+u4[i]);
-	Fx4inz[i]=0.5*(Fx4[i-Np]+Fx4[i]);
-	Fy4inz[i]=0.5*(Fy4[i-Np]+Fy4[i]);
-	Fz4inz[i]=0.5*(Fz4[i-Np]+Fz4[i]);
-	Fz5inz[i]=0.5*(Fz5[i-Np]+Fz5[i]);
+       	u4inz=0.5*(u4[i-Np]+u4[i]);
+	Fx4inz=0.5*(Fx4[i-Np]+Fx4[i]);
+	Fy4inz=0.5*(Fy4[i-Np]+Fy4[i]);
+	Fz4inz=0.5*(Fz4[i-Np]+Fz4[i]);
+	Fz5inz=0.5*(Fz5[i-Np]+Fz5[i]);
       }
 
        else{
-	u4inz[i]=u4[i];
-	Fx4inz[i]=Fx4[i];
-	Fy4inz[i]=Fy4[i];
-	Fz4inz[i]=Fz4[i];
-	Fz5inz[i]=Fz5[i];
+	u4inz=u4[i];
+	Fx4inz=Fx4[i];
+	Fy4inz=Fy4[i];
+	Fz4inz=Fz4[i];
+	Fz5inz=Fz5[i];
       }
 
-      rho[i]=rho[i]+sgnx(i,Nf)*(dt/dL)*(u2inx[i]-u2ipx[i])+sgny(i,Np)*(dt/dL)*(u3iny[i]-u3ipy[i])+sgnz(i,N)*(dt/dL)*(u4inz[i]-u4ipz[i]);
-      u2[i]=u2[i]+sgnx(i,Nf)*(dt/dL)*(Fx2inx[i]-Fx2ipx[i])+sgny(i,Np)*(dt/dL)*(Fx3iny[i]-Fx3ipy[i])+sgnz(i,N)*(dt/dL)*(Fx4inz[i]-Fx4ipz[i]);
-      u3[i]=u3[i]+sgnx(i,Nf)*(dt/dL)*(Fx3inx[i]-Fx3ipx[i])+sgny(i,Np)*(dt/dL)*(Fy3iny[i]-Fy3ipy[i])+sgnz(i,N)*(dt/dL)*(Fy4inz[i]-Fy4ipz[i]);
-      u4[i]=u4[i]+sgnx(i,Nf)*(dt/dL)*(Fx4inx[i]-Fx4ipx[i])+sgny(i,Np)*(dt/dL)*(Fy4iny[i]-Fy4ipy[i])+sgnz(i,N)*(dt/dL)*(Fz4inz[i]-Fz4ipz[i]);
-      u5[i]=u5[i]+sgnx(i,Nf)*(dt/dL)*(Fx5inx[i]-Fx5ipx[i])+sgny(i,Np)*(dt/dL)*(Fy5iny[i]-Fy5ipy[i])+sgnz(i,N)*(dt/dL)*(Fz5inz[i]-Fz5ipz[i]);
+      rho[i]=rho[i]+sgnx(i,Nf)*(dt/dL)*(u2inx-u2ipx)+sgny(i,Np)*(dt/dL)*(u3iny-u3ipy)+sgnz(i,N)*(dt/dL)*(u4inz-u4ipz);
+      u2[i]=u2[i]+sgnx(i,Nf)*(dt/dL)*(Fx2inx-Fx2ipx)+sgny(i,Np)*(dt/dL)*(Fx3iny-Fx3ipy)+sgnz(i,N)*(dt/dL)*(Fx4inz-Fx4ipz);
+      u3[i]=u3[i]+sgnx(i,Nf)*(dt/dL)*(Fx3inx-Fx3ipx)+sgny(i,Np)*(dt/dL)*(Fy3iny-Fy3ipy)+sgnz(i,N)*(dt/dL)*(Fy4inz-Fy4ipz);
+      u4[i]=u4[i]+sgnx(i,Nf)*(dt/dL)*(Fx4inx-Fx4ipx)+sgny(i,Np)*(dt/dL)*(Fy4iny-Fy4ipy)+sgnz(i,N)*(dt/dL)*(Fz4inz-Fz4ipz);
+      u5[i]=u5[i]+sgnx(i,Nf)*(dt/dL)*(Fx5inx-Fx5ipx)+sgny(i,Np)*(dt/dL)*(Fy5iny-Fy5ipy)+sgnz(i,N)*(dt/dL)*(Fz5inz-Fz5ipz);
 
       u[i]=u2[i]/rho[i];
       v[i]=u3[i]/rho[i];
