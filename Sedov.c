@@ -8,9 +8,9 @@
 float sgnx(int i,int Nf);
 float sgny(int i,int Np);
 float sgnz(int i,int N);
-void inicializar(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w);
-void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w);
-float max(float *A, int N);
+void inicializar(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,float *v,float *w);
+void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,float *v,float *w);
+float maxc(float *rho,float *P,float *u,float *v,float *w, int N);
 int wherefrente(float *A, int N);
 int wheremax(float *A, int N);
 
@@ -26,10 +26,6 @@ int main(){
   ic= (int)(0.5*(N+Np+Nf));
   /*Declaro las listas*/
   float *rho;
-  float *c;
-  float *cu;
-  float *cv;
-  float *cw;
   float *r;
   float *P;
   float *u;
@@ -37,10 +33,6 @@ int main(){
   float *w;
   
   rho=malloc(N*sizeof(float));
-  c=malloc(N*sizeof(float));
-  cu=malloc(N*sizeof(float));
-  cv=malloc(N*sizeof(float));
-  cw=malloc(N*sizeof(float));
   r=malloc(N*sizeof(float));
   P=malloc(N*sizeof(float));
   u=malloc(N*sizeof(float));
@@ -98,18 +90,15 @@ float sgnz(int i,int N){
 }
 
 
-void inicializar(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w){
+void inicializar(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,float *v,float *w){
   int i;
   for(i=0;i<N;i++){
     rho[i]=1.0;
     P[i]=1.0;
-    c[i]=pow(gamma*P[i]/rho[i],0.5);
     u[i]=0.0;
     v[i]=0.0;
     w[i]=0.0;
-    cu[i]=c[i]+u[i];
-    cv[i]=c[i]+v[i];
-    cw[i]=c[i]+w[i];
+    
   }
 
   float xc;
@@ -123,29 +112,44 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float
   }
     rho[ic]=1.0;
     P[ic]=(E0*(gamma-1.0)/(dL*dL*dL))/(101000.0);
-    c[ic]=pow(gamma*P[ic]/rho[ic],0.5);
     u[ic]=0.0;
     v[ic]=0.0;
     w[ic]=0.0;
-    cu[ic]=c[ic]+u[ic];
-    cv[ic]=c[ic]+v[ic];
-    cw[ic]=c[ic]+w[ic];
     
-
 }
 
 
 
-float max(float *A, int N){
-  float maximo;
-  maximo=A[0];
+float maxc(float *rho,float *P,float *u,float *v,float *w, int N){
+  float maximou;
+  float maximov;
+  float maximow;
+  maximou=pow(gamma*P[0]/rho[0],0.5)+u[0];
+  maximov=pow(gamma*P[0]/rho[0],0.5)+v[0];
+  maximow=pow(gamma*P[0]/rho[0],0.5)+w[0];
   int i;
   for(i=1;i<N;i++){
-    if(A[i]>maximo){
-      maximo=A[i];
+    if(pow(gamma*P[i]/rho[i],0.5)+u[i]>maximou){
+      maximou=pow(gamma*P[i]/rho[i],0.5)+u[i];
+    }
+
+    if(pow(gamma*P[i]/rho[i],0.5)+v[i]>maximov){
+      maximov=pow(gamma*P[i]/rho[i],0.5)+v[i];
+    }
+
+    if(pow(gamma*P[i]/rho[i],0.5)+w[i]>maximow){
+      maximow=pow(gamma*P[i]/rho[i],0.5)+w[i];
     }
   }
 
+  float maximo;
+  maximo=maximou;
+  if(maximov>maximo){
+    maximo=maximov;
+  }
+  if(maximow>maximo){
+    maximo=maximow;
+  }
   return maximo;
 }
 
@@ -186,16 +190,11 @@ int wheremax(float *A, int N){
 
 
 
-void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,float *cw,float *r,float *P,float *u,float *v,float *w){
+void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,float *v,float *w){
 
   float tiempo;
   float dt;
-  float *caux;
-  caux=malloc(3*sizeof(float));
-  caux[0]=max(cu,N);
-  caux[1]=max(cv,N);
-  caux[2]=max(cw,N);
-  dt=2.0*dL/max(caux,N);
+  dt=2.0*dL/maxc(rho,P,u,v,w,N);
   int cont;
   cont=0;
   int i;
@@ -350,20 +349,13 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,f
       v[i]=(v[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx3inx-Fx3ipx)+sgny(i,Np)*(dt/dL)*(Fy3iny-Fy3ipy)+sgnz(i,N)*(dt/dL)*(Fy4inz-Fy4ipz))/rho[i]);
       w[i]=(w[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx4inx-Fx4ipx)+sgny(i,Np)*(dt/dL)*(Fy4iny-Fy4ipy)+sgnz(i,N)*(dt/dL)*(Fz4inz-Fz4ipz))/rho[i]);
       P[i]=((P[i]/(gamma-1.0))+0.5*rhoa*(ua*ua+va*va+wa*wa)+sgnx(i,Nf)*(dt/dL)*(Fx5inx-Fx5ipx)+sgny(i,Np)*(dt/dL)*(Fy5iny-Fy5ipy)+sgnz(i,N)*(dt/dL)*(Fz5inz-Fz5ipz)-rho[i]*0.5*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))*(gamma-1.0);
-      c[i]=pow(gamma*P[i]/rho[i],0.5);
-      cu[i]=c[i]+u[i];
-      cv[i]=c[i]+v[i];
-      cw[i]=c[i]+w[i];
+     
     }
    
-    caux[0]=max(cu,N);
-    caux[1]=max(cv,N);
-    caux[2]=max(cw,N);
-    dt=2.0*dL/max(caux,N);
+    dt=2.0*dL/maxc(rho,P,u,v,w,N);
     cont++;
   }
 
-  /*
   FILE *archivo;
   archivo=fopen("rhosedov.dat","w");
   fclose(archivo);
@@ -372,7 +364,7 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *c,float *cu,float *cv,f
     fprintf(archivo,"%f ",rho[i]);
   }
   fclose(archivo);
-  */
+ 
 
 
 }
