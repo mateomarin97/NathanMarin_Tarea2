@@ -31,14 +31,14 @@ int main(){
   float *u;
   float *v;
   float *w;
-  
+
   rho=malloc(N*sizeof(float));
   r=malloc(N*sizeof(float));
   P=malloc(N*sizeof(float));
   u=malloc(N*sizeof(float));
   v=malloc(N*sizeof(float));
   w=malloc(N*sizeof(float));
- 
+
   /*Ahora las inicilaizo*/
   inicializar(N,Nf,Np,ic,rho,r,P,u,v,w);
   /*Ahora hago volumes finitos*/
@@ -65,7 +65,7 @@ float sgnx(int i,int Nf){
 
 
 float sgny(int i,int Np){
-  
+
   if(i%Np>=Np/2){
     return 1.0;
   }
@@ -80,11 +80,11 @@ float sgny(int i,int Np){
 
 float sgnz(int i,int N){
   if(i>=N/2){
-    return 1.0;
+    return -1.0;
   }
 
   else{
-    return -1.0;
+    return 1.0;
   }
 
 }
@@ -98,7 +98,7 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float 
     u[i]=0.0;
     v[i]=0.0;
     w[i]=0.0;
-    
+
   }
 
   float xc;
@@ -115,7 +115,8 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float 
     u[ic]=0.0;
     v[ic]=0.0;
     w[ic]=0.0;
-    
+
+
 }
 
 
@@ -203,7 +204,7 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
   fprintf(archivo,"%f ",dt);
   fclose(archivo);
 
-  
+
   int cont;
   cont=0;
   int i;
@@ -244,107 +245,111 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
   float va;
   float wa;
 
-  
-  
-  while(cont<100){
+
+
+  while(cont<5){
     for(i=0;i<N;i++){
 
       if(i%Nf!=Nf-1){
-	u2ipx=0.5*(rho[i+1]*u[i+1]+rho[i]*u[i]);
-	Fx2ipx=0.5*((rho[i+1]*u[i+1]*u[i+1])+P[i+1]+P[i]+(rho[i]*u[i]*u[i]));
-	Fx3ipx=0.5*(rho[i+1]*u[i+1]*v[i+1]+rho[i]*u[i]*v[i]);
-	Fx4ipx=0.5*(rho[i+1]*u[i+1]*w[i+1]+rho[i]*u[i]*w[i]);
-	Fx5ipx=0.5*((u[i+1]*(P[i+1]+(P[i+1]/(gamma-1.0))+0.5*rho[i+1]*(u[i+1]*u[i+1]+v[i+1]*v[i+1]+w[i+1]*w[i+1])))+(u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
+      	u2ipx=0.5*(rho[i+1]*u[i+1]+rho[i]*u[i]);
+      	Fx2ipx=0.5*((rho[i+1]*u[i+1]*u[i+1])+P[i+1]+P[i]+(rho[i]*u[i]*u[i]));
+      	Fx3ipx=0.5*(rho[i+1]*u[i+1]*v[i+1]+rho[i]*u[i]*v[i]);
+      	Fx4ipx=0.5*(rho[i+1]*u[i+1]*w[i+1]+rho[i]*u[i]*w[i]);
+      	Fx5ipx=0.5*((u[i+1]*(P[i+1]+(P[i+1]/(gamma-1.0))+0.5*rho[i+1]*(u[i+1]*u[i+1]+v[i+1]*v[i+1]+w[i+1]*w[i+1])))+(u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
       else {
-	u2ipx=rho[i]*u[i];
-	Fx2ipx=rho[i]*u[i]*u[i]+P[i];
-	Fx3ipx=rho[i]*u[i]*v[i];
-	Fx4ipx=rho[i]*u[i]*w[i];
-	Fx5ipx=u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+      	u2ipx=rho[i]*u[i];
+      	Fx2ipx=rho[i]*u[i]*u[i]+P[i];
+      	Fx3ipx=rho[i]*u[i]*v[i];
+      	Fx4ipx=rho[i]*u[i]*w[i];
+      	Fx5ipx=u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+
+
       }
 
       if(i%Nf!=0){
-	u2inx=0.5*(rho[i-1]*u[i-1]+rho[i]*u[i]);
-	Fx2inx=0.5*((rho[i-1]*u[i-1]*u[i-1])+P[i-1]+P[i]+(rho[i]*u[i]*u[i]));
-	Fx3inx=0.5*(rho[i-1]*u[i-1]*v[i-1]+rho[i]*u[i]*v[i]);
-	Fx4inx=0.5*(rho[i-1]*u[i-1]*w[i-1]+rho[i]*u[i]*w[i]);
-	Fx5inx=0.5*((u[i-1]*(P[i-1]+(P[i-1]/(gamma-1.0))+0.5*rho[i-1]*(u[i-1]*u[i-1]+v[i-1]*v[i-1]+w[i-1]*w[i-1])))+(u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
+      	u2inx=0.5*(rho[i-1]*u[i-1]+rho[i]*u[i]);
+      	Fx2inx=0.5*((rho[i-1]*u[i-1]*u[i-1])+P[i-1]+P[i]+(rho[i]*u[i]*u[i]));
+      	Fx3inx=0.5*(rho[i-1]*u[i-1]*v[i-1]+rho[i]*u[i]*v[i]);
+      	Fx4inx=0.5*(rho[i-1]*u[i-1]*w[i-1]+rho[i]*u[i]*w[i]);
+      	Fx5inx=0.5*((u[i-1]*(P[i-1]+(P[i-1]/(gamma-1.0))+0.5*rho[i-1]*(u[i-1]*u[i-1]+v[i-1]*v[i-1]+w[i-1]*w[i-1])))+(u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
       else{
-	u2inx=rho[i]*u[i];
-	Fx2inx=rho[i]*u[i]*u[i]+P[i];
-	Fx3inx=rho[i]*u[i]*v[i];
-	Fx4inx=rho[i]*u[i]*w[i];
-	Fx5inx=u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+      	u2inx=rho[i]*u[i];
+      	Fx2inx=rho[i]*u[i]*u[i]+P[i];
+      	Fx3inx=rho[i]*u[i]*v[i];
+      	Fx4inx=rho[i]*u[i]*w[i];
+      	Fx5inx=u[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+
+
       }
 
 
       if(i%Np<Np-Nf){
-	u3ipy=0.5*(rho[i+Nf]*v[i+Nf]+rho[i]*v[i]);
-	Fx3ipy=0.5*(rho[i+Nf]*u[i+Nf]*v[i+Nf]+rho[i]*u[i]*v[i]);
-	Fy3ipy=0.5*(rho[i+Nf]*v[i+Nf]*v[i+Nf]+P[i+Nf]+rho[i]*v[i]*v[i]+P[i]);
-	Fy4ipy=0.5*(rho[i+Nf]*v[i+Nf]*w[i+Nf]+rho[i]*v[i]*w[i]);
+      	u3ipy=0.5*(rho[i+Nf]*v[i+Nf]+rho[i]*v[i]);
+      	Fx3ipy=0.5*(rho[i+Nf]*u[i+Nf]*v[i+Nf]+rho[i]*u[i]*v[i]);
+      	Fy3ipy=0.5*(rho[i+Nf]*v[i+Nf]*v[i+Nf]+P[i+Nf]+rho[i]*v[i]*v[i]+P[i]);
+      	Fy4ipy=0.5*(rho[i+Nf]*v[i+Nf]*w[i+Nf]+rho[i]*v[i]*w[i]);
        	Fy5ipy=0.5*((v[i+Nf]*(P[i+Nf]+(P[i+Nf]/(gamma-1.0))+0.5*rho[i+Nf]*(u[i+Nf]*u[i+Nf]+v[i+Nf]*v[i+Nf]+w[i+Nf]*w[i+Nf])))+(v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
       else{
-	u3ipy=rho[i]*v[i];
-	Fx3ipy=rho[i]*u[i]*v[i];
-	Fy3ipy=rho[i]*v[i]*v[i]+P[i];
-	Fy4ipy=rho[i]*v[i]*w[i];
+      	u3ipy=rho[i]*v[i];
+      	Fx3ipy=rho[i]*u[i]*v[i];
+      	Fy3ipy=rho[i]*v[i]*v[i]+P[i];
+      	Fy4ipy=rho[i]*v[i]*w[i];
        	Fy5ipy=v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
 
       if(i%Np>=Nf){
        	u3iny=0.5*(rho[i-Nf]*v[i-Nf]+rho[i]*v[i]);
-	Fx3iny=0.5*(rho[i-Nf]*u[i-Nf]*v[i-Nf]+rho[i]*u[i]*v[i]);
-	Fy3iny=0.5*(rho[i-Nf]*v[i-Nf]*v[i-Nf]+P[i-Nf]+rho[i]*v[i]*v[i]+P[i]);
-	Fy4iny=0.5*(rho[i-Nf]*v[i-Nf]*w[i-Nf]+rho[i]*v[i]*w[i]);
+      	Fx3iny=0.5*(rho[i-Nf]*u[i-Nf]*v[i-Nf]+rho[i]*u[i]*v[i]);
+      	Fy3iny=0.5*(rho[i-Nf]*v[i-Nf]*v[i-Nf]+P[i-Nf]+rho[i]*v[i]*v[i]+P[i]);
+      	Fy4iny=0.5*(rho[i-Nf]*v[i-Nf]*w[i-Nf]+rho[i]*v[i]*w[i]);
        	Fy5iny=0.5*((v[i-Nf]*(P[i-Nf]+(P[i-Nf]/(gamma-1.0))+0.5*rho[i-Nf]*(u[i-Nf]*u[i-Nf]+v[i-Nf]*v[i-Nf]+w[i-Nf]*w[i-Nf])))+(v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
 
       else{
-	u3iny=rho[i]*v[i];
-	Fx3iny=rho[i]*u[i]*v[i];
-	Fy3iny=rho[i]*v[i]*v[i]+P[i];
-	Fy4iny=rho[i]*v[i]*w[i];
+      	u3iny=rho[i]*v[i];
+      	Fx3iny=rho[i]*u[i]*v[i];
+      	Fy3iny=rho[i]*v[i]*v[i]+P[i];
+      	Fy4iny=rho[i]*v[i]*w[i];
        	Fy5iny=v[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
 
       if(i<N-Np){
-	u4ipz=0.5*(rho[i+Np]*w[i+Np]+rho[i]*w[i]);
-	Fx4ipz=0.5*(rho[i+Np]*u[i+Np]*w[i+Np]+rho[i]*u[i]*w[i]);
-	Fy4ipz=0.5*(rho[i+Np]*v[i+Np]*w[i+Np]+rho[i]*v[i]*w[i]);
-	Fz4ipz=0.5*(rho[i+Np]*w[i+Np]*w[i+Np]+P[i+Np]+rho[i]*w[i]*w[i]+P[i]);
-	Fz5ipz=0.5*((w[i+Np]*(P[i+Np]+(P[i+Np]/(gamma-1.0))+0.5*rho[i+Np]*(u[i+Np]*u[i+Np]+v[i+Np]*v[i+Np]+w[i+Np]*w[i+Np])))+(w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
+        	u4ipz=0.5*(rho[i+Np]*w[i+Np]+rho[i]*w[i]);
+        	Fx4ipz=0.5*(rho[i+Np]*u[i+Np]*w[i+Np]+rho[i]*u[i]*w[i]);
+        	Fy4ipz=0.5*(rho[i+Np]*v[i+Np]*w[i+Np]+rho[i]*v[i]*w[i]);
+        	Fz4ipz=0.5*(rho[i+Np]*w[i+Np]*w[i+Np]+P[i+Np]+rho[i]*w[i]*w[i]+P[i]);
+        	Fz5ipz=0.5*((w[i+Np]*(P[i+Np]+(P[i+Np]/(gamma-1.0))+0.5*rho[i+Np]*(u[i+Np]*u[i+Np]+v[i+Np]*v[i+Np]+w[i+Np]*w[i+Np])))+(w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
 
       else{
-	u4ipz=rho[i]*w[i];
-	Fx4ipz=rho[i]*u[i]*w[i];
-	Fy4ipz=rho[i]*v[i]*w[i];
-	Fz4ipz=rho[i]*w[i]*w[i]+P[i];
-	Fz5ipz=w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+        	u4ipz=rho[i]*w[i];
+        	Fx4ipz=rho[i]*u[i]*w[i];
+        	Fy4ipz=rho[i]*v[i]*w[i];
+        	Fz4ipz=rho[i]*w[i]*w[i]+P[i];
+        	Fz5ipz=w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
-      
+
 
       if(i>=Np){
        	u4inz=0.5*(rho[i-Np]*w[i-Np]+rho[i]*w[i]);
-	Fx4inz=0.5*(rho[i-Np]*u[i-Np]*w[i-Np]+rho[i]*u[i]*w[i]);
-	Fy4inz=0.5*(rho[i-Np]*v[i-Np]*w[i-Np]+rho[i]*v[i]*w[i]);
-	Fz4inz=0.5*(rho[i-Np]*w[i-Np]*w[i-Np]+P[i-Np]+rho[i]*w[i]*w[i]+P[i]);
-	Fz5inz=0.5*((w[i-Np]*(P[i-Np]+(P[i-Np]/(gamma-1.0))+0.5*rho[i-Np]*(u[i-Np]*u[i-Np]+v[i-Np]*v[i-Np]+w[i-Np]*w[i-Np])))+(w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
+      	Fx4inz=0.5*(rho[i-Np]*u[i-Np]*w[i-Np]+rho[i]*u[i]*w[i]);
+      	Fy4inz=0.5*(rho[i-Np]*v[i-Np]*w[i-Np]+rho[i]*v[i]*w[i]);
+      	Fz4inz=0.5*(rho[i-Np]*w[i-Np]*w[i-Np]+P[i-Np]+rho[i]*w[i]*w[i]+P[i]);
+      	Fz5inz=0.5*((w[i-Np]*(P[i-Np]+(P[i-Np]/(gamma-1.0))+0.5*rho[i-Np]*(u[i-Np]*u[i-Np]+v[i-Np]*v[i-Np]+w[i-Np]*w[i-Np])))+(w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))));
       }
 
        else{
-	u4inz=rho[i]*w[i];
-	Fx4inz=rho[i]*u[i]*w[i];
-	Fy4inz=rho[i]*v[i]*w[i];
-	Fz4inz=rho[i]*w[i]*w[i]+P[i];
-	Fz5inz=w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
+        	u4inz=rho[i]*w[i];
+        	Fx4inz=rho[i]*u[i]*w[i];
+        	Fy4inz=rho[i]*v[i]*w[i];
+        	Fz4inz=rho[i]*w[i]*w[i]+P[i];
+        	Fz5inz=w[i]*(P[i]+(P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]));
       }
 
 
@@ -352,15 +357,22 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
       ua=u[i];
       va=v[i];
       wa=w[i];
-      
+
       rho[i]=rho[i]+sgnx(i,Nf)*(dt/dL)*(u2inx-u2ipx)+sgny(i,Np)*(dt/dL)*(u3iny-u3ipy)+sgnz(i,N)*(dt/dL)*(u4inz-u4ipz);
       u[i]=(u[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx2inx-Fx2ipx)+sgny(i,Np)*(dt/dL)*(Fx3iny-Fx3ipy)+sgnz(i,N)*(dt/dL)*(Fx4inz-Fx4ipz))/rho[i]);
+      u[i] =  abs(u[i]);
+      if(u[i]<0){
+        u[i] = -u[i];
+        printf("%f\n",u[i] );
+      }
       v[i]=(v[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx3inx-Fx3ipx)+sgny(i,Np)*(dt/dL)*(Fy3iny-Fy3ipy)+sgnz(i,N)*(dt/dL)*(Fy4inz-Fy4ipz))/rho[i]);
+      v[i] = abs(v[i]);
       w[i]=(w[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx4inx-Fx4ipx)+sgny(i,Np)*(dt/dL)*(Fy4iny-Fy4ipy)+sgnz(i,N)*(dt/dL)*(Fz4inz-Fz4ipz))/rho[i]);
+      w[i] = abs(w[i]);
       P[i]=((P[i]/(gamma-1.0))+0.5*rhoa*(ua*ua+va*va+wa*wa)+sgnx(i,Nf)*(dt/dL)*(Fx5inx-Fx5ipx)+sgny(i,Np)*(dt/dL)*(Fy5iny-Fy5ipy)+sgnz(i,N)*(dt/dL)*(Fz5inz-Fz5ipz)-rho[i]*0.5*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))*(gamma-1.0);
-     
+
     }
-   
+
     dt=2.0*dL/maxc(rho,P,u,v,w,N);
     archivo=fopen("dtsedov.dat","w");
     fclose(archivo);
@@ -370,21 +382,30 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
     cont++;
   }
 
- 
-  archivo=fopen("rhosedov.dat","w");
+
+  archivo=fopen("rhosedovx.dat","w");
   fclose(archivo);
-  archivo=fopen("rhosedov.dat","a");
+  archivo=fopen("rhosedovx.dat","a");
   for(i=ic;i<ic+0.5*Nf;i++){
     fprintf(archivo,"%f ",rho[i]);
   }
   fclose(archivo);
- 
 
+  archivo=fopen("rhosedovy.dat","w");
+  fclose(archivo);
+  archivo=fopen("rhosedovy.dat","a");
+  for(i=ic;i<ic+64*Nf;i+=Nf){
+    fprintf(archivo,"%f ",rho[i]);
+  }
+  fclose(archivo);
+
+
+  archivo=fopen("usedov.dat","w");
+  fclose(archivo);
+  archivo=fopen("usedov.dat","a");
+  for(i=ic;i<ic+0.5*Nf;i++){
+    fprintf(archivo,"%f ",u[i]);
+  }
+  fclose(archivo);
 
 }
-
-
-
-
-
-
