@@ -94,7 +94,7 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float 
   int i;
   for(i=0;i<N;i++){
     rho[i]=1.0;
-    P[i]=1.0;
+    P[i]=0.8403;
     u[i]=0.0;
     v[i]=0.0;
     w[i]=0.0;
@@ -111,7 +111,7 @@ void inicializar(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float 
     r[i]=pow((xc-(dL*(0.5+(i%Nf))))*(xc-(dL*(0.5+(i%Nf))))+(yc-(dL*(0.5+(int)((i%Np)/Nf))))*(yc-(dL*(0.5+(int)((i%Np)/Nf))))+(zc-(dL*(0.5+(int)(i/Np))))*(zc-(dL*(0.5+(int)(i/Np)))),0.5);
   }
     rho[ic]=1.0;
-    P[ic]=(E0*(gamma-1.0)/(dL*dL*dL))/(101000.0);
+    P[ic]=5.0;
     u[ic]=0.0;
     v[ic]=0.0;
     w[ic]=0.0;
@@ -125,21 +125,21 @@ float maxc(float *rho,float *P,float *u,float *v,float *w, int N){
   float maximou;
   float maximov;
   float maximow;
-  maximou=pow(gamma*P[0]/rho[0],0.5)+u[0];
-  maximov=pow(gamma*P[0]/rho[0],0.5)+v[0];
-  maximow=pow(gamma*P[0]/rho[0],0.5)+w[0];
+  maximou=sqrt(((gamma+1.0)/rho[0])*((gamma*P[0]/(gamma-1.0))+0.5*rho[0]*(u[0]*u[0]+v[0]*v[0]+w[0]*w[0])))+u[0];
+  maximov=sqrt(((gamma+1.0)/rho[0])*((gamma*P[0]/(gamma-1.0))+0.5*rho[0]*(u[0]*u[0]+v[0]*v[0]+w[0]*w[0])))+v[0];
+  maximow=sqrt(((gamma+1.0)/rho[0])*((gamma*P[0]/(gamma-1.0))+0.5*rho[0]*(u[0]*u[0]+v[0]*v[0]+w[0]*w[0])))+w[0];
   int i;
   for(i=1;i<N;i++){
-    if(pow(gamma*P[i]/rho[i],0.5)+u[i]>maximou){
-      maximou=pow(gamma*P[i]/rho[i],0.5)+u[i];
+    if(sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i])))+u[i]>maximou){
+      maximou=sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i])))+u[i];
     }
 
-    if(pow(gamma*P[i]/rho[i],0.5)+v[i]>maximov){
-      maximov=pow(gamma*P[i]/rho[i],0.5)+v[i];
+    if(sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i])))+v[i]>maximov){
+      maximov=sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i])))+v[i];
     }
 
-    if(pow(gamma*P[i]/rho[i],0.5)+w[i]>maximow){
-      maximow=pow(gamma*P[i]/rho[i],0.5)+w[i];
+    if(sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i])))+w[i]>maximow){
+      maximow=sqrt(((gamma+1.0)/rho[i])*((gamma*P[i]/(gamma-1.0))+0.5*rho[i]*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i])))+w[i];
     }
   }
 
@@ -162,7 +162,7 @@ int wherefrente(float *A, int N){
   int f;
   f=0;
   for(i=wheremax(A,N);i<N;i++){
-    if(A[i]<0.01 && f==0){
+    if(A[i]<A[N-1]+0.001 && f==0){
       f=i;
     }
   }
@@ -197,13 +197,6 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
   FILE *archivo;
   float dt;
   dt=2.0*dL/maxc(rho,P,u,v,w,N);
-
-  archivo=fopen("dtsedov.dat","w");
-  fclose(archivo);
-  archivo=fopen("dtsedov.dat","a");
-  fprintf(archivo,"%f ",dt);
-  fclose(archivo);
-
 
   int cont;
   cont=0;
@@ -247,7 +240,7 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
 
 
 
-  while(cont<5){
+  while(cont<10){
     for(i=0;i<N;i++){
 
       if(i%Nf!=Nf-1){
@@ -363,23 +356,22 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
       u[i] =  abs(u[i]);
       if(u[i]<0){
         u[i] = -u[i];
-        printf("%f\n",u[i] );
       }
       v[i]=(v[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx3inx-Fx3ipx)+sgny(i,Np)*(dt/dL)*(Fy3iny-Fy3ipy)+sgnz(i,N)*(dt/dL)*(Fy4inz-Fy4ipz))/rho[i]);
-      v[i] = abs(v[i]);
+      if(v[i]<0){
+        v[i]=-v[i];
+      }
       w[i]=(w[i]*rhoa/rho[i])+((sgnx(i,Nf)*(dt/dL)*(Fx4inx-Fx4ipx)+sgny(i,Np)*(dt/dL)*(Fy4iny-Fy4ipy)+sgnz(i,N)*(dt/dL)*(Fz4inz-Fz4ipz))/rho[i]);
-      w[i] = abs(w[i]);
+      if(w[i]<0){
+        w[i]=-w[i];
+      }
       P[i]=((P[i]/(gamma-1.0))+0.5*rhoa*(ua*ua+va*va+wa*wa)+sgnx(i,Nf)*(dt/dL)*(Fx5inx-Fx5ipx)+sgny(i,Np)*(dt/dL)*(Fy5iny-Fy5ipy)+sgnz(i,N)*(dt/dL)*(Fz5inz-Fz5ipz)-rho[i]*0.5*(u[i]*u[i]+v[i]*v[i]+w[i]*w[i]))*(gamma-1.0);
 
     }
-
+    
     dt=2.0*dL/maxc(rho,P,u,v,w,N);
-    archivo=fopen("dtsedov.dat","w");
-    fclose(archivo);
-    archivo=fopen("dtsedov.dat","a");
-    fprintf(archivo,"%f ",dt);
-    fclose(archivo);
     cont++;
+
   }
 
 
@@ -400,12 +392,5 @@ void sedov(int N,int Nf,int Np,int ic, float *rho,float *r,float *P,float *u,flo
   fclose(archivo);
 
 
-  archivo=fopen("usedov.dat","w");
-  fclose(archivo);
-  archivo=fopen("usedov.dat","a");
-  for(i=ic;i<ic+0.5*Nf;i++){
-    fprintf(archivo,"%f ",u[i]);
-  }
-  fclose(archivo);
 
 }

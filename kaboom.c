@@ -79,7 +79,7 @@ void inicializar(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   for(i=0;i<N;i++){
     u[i]=0.0;
     rho[i]=1.0;
-    P[i]=4.7641;
+    P[i]=0.8403;
 
 
     u2[i]=rho[i]*u[i];
@@ -164,7 +164,7 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
 
 
   /*Empieza el metodo*/
-  while(j==0 && con<10000){
+  while(j==0 && con<100000){
     con++;
     /*Primer paso*/
     i=0;
@@ -216,11 +216,11 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
     }
     dt=2.0*dx/max(uc);
     tiempo=tiempo+dt;
-    if(wherefrente(P)>=ic){
+    if(wherefrente(rho)>=ic){
       j=1;
     }
 
-    if(wherefrente(P)>=icc && j2==0){
+    if(wherefrente(rho)>=icc && j2==0){
       j2=1;
       archivo=fopen("t2sedov.dat","w");
       fclose(archivo);
@@ -255,7 +255,7 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
 
 
 
-    if(wherefrente(P)>=iccc && j3==0){
+    if(wherefrente(rho)>=iccc && j3==0){
       j3=1;
       archivo=fopen("t1sedov.dat","w");
       fclose(archivo);
@@ -336,7 +336,7 @@ int wherefrente(float *A){
   int f;
   f=0;
   for(i=wheremax(A);i<N;i++){
-    if(A[i]<1.01 && f==0){
+    if(A[i]<A[N-1]+0.0001 && f==0){
       f=i;
     }
   }
