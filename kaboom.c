@@ -39,25 +39,25 @@ int main(){
   /*Imprimimos los datos*/
   int i;
   FILE *archivo;
-  archivo=fopen("ukaboom.dat","w");
+  archivo=fopen("u3sedov.dat","w");
   fclose(archivo);
-  archivo=fopen("ukaboom.dat","a");
+  archivo=fopen("u3sedov.dat","a");
   for(i=0;i<N;i++){
     fprintf(archivo,"%f ",u[i]);
   }
   fclose(archivo);
 
-  archivo=fopen("pkabooms.dat","w");
+  archivo=fopen("p3sedov.dat","w");
   fclose(archivo);
-  archivo=fopen("pkaboom.dat","a");
+  archivo=fopen("p3sedov.dat","a");
   for(i=0;i<N;i++){
     fprintf(archivo,"%f ",P[i]);
   }
   fclose(archivo);
 
-  archivo=fopen("rhokaboom.dat","w");
+  archivo=fopen("rho3sedov.dat","w");
   fclose(archivo);
-  archivo=fopen("rhokaboom.dat","a");
+  archivo=fopen("rho3sedov.dat","a");
   for(i=0;i<N;i++){
     fprintf(archivo,"%f ",rho[i]);
   }
@@ -79,7 +79,7 @@ void inicializar(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   for(i=0;i<N;i++){
     u[i]=0.0;
     rho[i]=1.0;
-    P[i]=1.0;
+    P[i]=4.7641;
 
 
     u2[i]=rho[i]*u[i];
@@ -90,7 +90,7 @@ void inicializar(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
     uc[i]=u[i]+c[i];
   }
   // P[0] = (E0*(gamma-1.0)/(dL*dL*dL))/(101000.0);
-  P[0] = 10.0;
+  P[0] = 5.0;
   u2[0]=rho[0]*u[0];
   u3[0]=(P[0]/(gamma-1.0))+0.5*rho[0]*u[0]*u[0];
   F2[0]=(rho[0]*u[0]*u[0])+P[0];
@@ -106,10 +106,16 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   /*Declaro variables y constantes importantes*/
   float dx;
   int ic;
+  int icc;
+  int iccc;
   float tiempo;
   dx= L/N;
-  ic=(int)(0.9*N-1);
+  ic=(int)(120.0/dx);
   ic= ic+1;
+  icc=(int)(60.0/dx);
+  icc= icc+1;
+  iccc=(int)(10.0/dx);
+  iccc= iccc+1;
   int i;
   float dt;
   dt=2.0*dx/max(uc);
@@ -129,6 +135,7 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   float *F2in;
   float *F3ip;
   float *F3in;
+  FILE *archivo;
 
   rhoip=malloc(N*sizeof(float));
   rhoin=malloc(N*sizeof(float));
@@ -150,11 +157,14 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
   j=0;
   int con;
   con=0;
+  int j2;
+  j2=0;
+  int j3;
+  j3=0;
 
 
   /*Empieza el metodo*/
-  while(j==0 && con<100){
-    printf("%d\n",con  );
+  while(j==0 && con<10000){
     con++;
     /*Primer paso*/
     i=0;
@@ -206,14 +216,87 @@ void LaxWendroff(float *u,float *rho,float *P,float *u2,float *u3,float *F2,floa
     }
     dt=2.0*dx/max(uc);
     tiempo=tiempo+dt;
-    if(wherefrente(u)>=ic){
+    if(wherefrente(P)>=ic){
       j=1;
     }
+
+    if(wherefrente(P)>=icc && j2==0){
+      j2=1;
+      archivo=fopen("t2sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("t2sedov.dat","a");
+      fprintf(archivo,"%f ",tiempo);
+      fclose(archivo);
+      archivo=fopen("u2sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("u2sedov.dat","a");
+      for(i=0;i<N;i++){
+	fprintf(archivo,"%f ",u[i]);
+      }
+      fclose(archivo);
+
+      archivo=fopen("p2sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("p2sedov.dat","a");
+      for(i=0;i<N;i++){
+	fprintf(archivo,"%f ",P[i]);
+      }
+      fclose(archivo);
+
+      archivo=fopen("rho2sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("rho2sedov.dat","a");
+      for(i=0;i<N;i++){
+	fprintf(archivo,"%f ",rho[i]);
+      }
+      fclose(archivo);
+
+    }
+
+
+
+    if(wherefrente(P)>=iccc && j3==0){
+      j3=1;
+      archivo=fopen("t1sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("t1sedov.dat","a");
+      fprintf(archivo,"%f ",tiempo);
+      fclose(archivo);
+      archivo=fopen("u1sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("u1sedov.dat","a");
+      for(i=0;i<N;i++){
+	fprintf(archivo,"%f ",u[i]);
+      }
+      fclose(archivo);
+
+      archivo=fopen("p1sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("p1sedov.dat","a");
+      for(i=0;i<N;i++){
+	fprintf(archivo,"%f ",P[i]);
+      }
+      fclose(archivo);
+
+      archivo=fopen("rho1sedov.dat","w");
+      fclose(archivo);
+      archivo=fopen("rho1sedov.dat","a");
+      for(i=0;i<N;i++){
+	fprintf(archivo,"%f ",rho[i]);
+      }
+      fclose(archivo);
+
+    }
+  
+
+
+
+    
   }
-  FILE *archivo;
-  archivo=fopen("tshock.dat","w");
+  
+  archivo=fopen("t3sedov.dat","w");
   fclose(archivo);
-  archivo=fopen("tshock.dat","a");
+  archivo=fopen("t3sedov.dat","a");
   fprintf(archivo,"%f ",tiempo);
   fclose(archivo);
 
@@ -253,7 +336,7 @@ int wherefrente(float *A){
   int f;
   f=0;
   for(i=wheremax(A);i<N;i++){
-    if(A[i]<0.01 && f==0){
+    if(A[i]<1.01 && f==0){
       f=i;
     }
   }
